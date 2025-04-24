@@ -30,8 +30,11 @@ if(!isset($_SESSION['username'])) {
           <h5 class="card-title text text-primary"><?php echo $posts->title; ?></h5>
           <p class="card-text"><?php echo $posts->body; ?></p>
           <p class="card-text"><small class="text-body-secondary"><?php echo $posts->created_at; ?></small></p>
-          <div class="my-rating"></div>
-          <input id="rating" type="text" value="">
+          <form id="form-data" method="POST">
+            <div class="my-rating"></div>
+            <input id="rating" type="text" name="rating" value="">
+            <input id="post_id" type="text" name="post_id" value="<?php echo $posts->id; ?>">
+          </form>
         </div>
     </div>
 
@@ -143,6 +146,24 @@ if(!isset($_SESSION['username'])) {
     starSize: 25,
     callback: function(currentRating, $el){
         $("#rating").val(currentRating);
+
+        $(".my-rating").click(function(e) {
+          e.preventDefault();
+
+          var formdata = $("#form-data").serialize()+'&insert=insert';
+
+          $.ajax({
+            type: "POST",
+            url: 'insert-ratings.php',
+            data: formdata,
+
+            success:function() {
+              alert(formdata);
+            }
+          })
+
+        })
+
     }
 });
 
