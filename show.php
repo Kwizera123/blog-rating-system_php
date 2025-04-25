@@ -22,7 +22,7 @@ if(!isset($_SESSION['username'])) {
 
       $comment = $comments->fetchAll(PDO::FETCH_OBJ);
 // 
-      $ratings = $conn->query("SELECT * FROM rates WHERE post_id='$id'");
+      $ratings = $conn->query("SELECT * FROM rates WHERE post_id='$id' AND user_id = '$_SESSION[user_id]'");
       $ratings->execute();
 
       $rating = $ratings->fetch(PDO::FETCH_OBJ);
@@ -39,6 +39,7 @@ if(!isset($_SESSION['username'])) {
             <div class="my-rating"></div>
             <input id="rating" type="hidden" name="rating" value="">
             <input id="post_id" type="hidden" name="post_id" value="<?php echo $posts->id; ?>">
+            <input id="user_id" type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
           </form>
         </div>
     </div>
@@ -152,7 +153,7 @@ if(!isset($_SESSION['username'])) {
 
     initialRating: "<?php 
 
-    if(isset($rating->rating)) {
+    if(isset($rating->rating) AND isset($rating->user_id) AND $rating->user_id == $_SESSION['user_id']) {
       echo $rating->rating;
     } else {
       echo '0';
