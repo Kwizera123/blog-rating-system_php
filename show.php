@@ -21,6 +21,11 @@ if(!isset($_SESSION['username'])) {
       $comments->execute();
 
       $comment = $comments->fetchAll(PDO::FETCH_OBJ);
+// 
+      $ratings = $conn->query("SELECT * FROM rates WHERE post_id='$id'");
+      $ratings->execute();
+
+      $rating = $ratings->fetch(PDO::FETCH_OBJ);
 
 ?>
 
@@ -32,8 +37,8 @@ if(!isset($_SESSION['username'])) {
           <p class="card-text"><small class="text-body-secondary"><?php echo $posts->created_at; ?></small></p>
           <form id="form-data" method="POST">
             <div class="my-rating"></div>
-            <input id="rating" type="text" name="rating" value="">
-            <input id="post_id" type="text" name="post_id" value="<?php echo $posts->id; ?>">
+            <input id="rating" type="hidden" name="rating" value="">
+            <input id="post_id" type="hidden" name="post_id" value="<?php echo $posts->id; ?>">
           </form>
         </div>
     </div>
@@ -144,6 +149,16 @@ if(!isset($_SESSION['username'])) {
 // rating codes
        $(".my-rating").starRating({
     starSize: 25,
+
+    initialRating: "<?php 
+
+    if(isset($rating->rating)) {
+      echo $rating->rating;
+    } else {
+      echo '0';
+    }
+    ?>",
+
     callback: function(currentRating, $el){
         $("#rating").val(currentRating);
 
@@ -158,7 +173,7 @@ if(!isset($_SESSION['username'])) {
             data: formdata,
 
             success:function() {
-              alert(formdata);
+              //alert(formdata);
             }
           })
 
