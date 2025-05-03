@@ -58,7 +58,7 @@
       <label for="floatingPassword">Password</label>
     </div><br>
 
-    <button name="submit" class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+    <button name="submit" class="w-100 btn btn-lg btn-primary" type="submit">Sign Up</button>
     <h6 class="mt-3">Aleardy have an account?  <a href="login.php">Login</a></h6>
 
   </form>

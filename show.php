@@ -21,28 +21,34 @@ if(!isset($_SESSION['username'])) {
       $comments->execute();
 
       $comment = $comments->fetchAll(PDO::FETCH_OBJ);
-// 
-      $ratings = $conn->query("SELECT * FROM rates WHERE post_id='$id' AND user_id = '$_SESSION[user_id]'");
-      $ratings->execute();
 
-      $rating = $ratings->fetch(PDO::FETCH_OBJ);
+   if(isset($_SESSION['user_id'])) {
+    $ratings = $conn->query("SELECT * FROM rates WHERE post_id='$id' AND user_id = '$_SESSION[user_id]'");
+    $ratings->execute();
+
+    $rating = $ratings->fetch(PDO::FETCH_OBJ);
+   }
+
 
 ?>
 
-    <div class="card mt-3">
-      <div class="card-header">Writen by <?php echo $posts->username; ?></div>
-        <div class="card-body">
-          <h5 class="card-title text text-primary"><?php echo $posts->title; ?></h5>
-          <p class="card-text"><?php echo $posts->body; ?></p>
-          <p class="card-text"><small class="text-body-secondary"><?php echo $posts->created_at; ?></small></p>
-          <form id="form-data" method="POST">
-            <div class="my-rating"></div>
-            <input id="rating" type="hidden" name="rating" value="">
-            <input id="post_id" type="hidden" name="post_id" value="<?php echo $posts->id; ?>">
-            <input id="user_id" type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
-          </form>
-        </div>
+  <div id="search-data"></div>
+    <div class="row">
+      <div class="card mt-5">
+        <div class="card-header">Writen by <?php echo $posts->username; ?></div>
+          <div class="card-body">
+            <h5 class="card-title text text-primary"><?php echo $posts->title; ?></h5>
+            <p class="card-text"><?php echo $posts->body; ?></p>
+            <p class="card-text"><small class="text-body-secondary"><?php echo $posts->created_at; ?></small></p>
+            <form id="form-data" method="POST">
+              <div class="my-rating"></div>
+              <input id="rating" type="hidden" name="rating" value="">
+              <input id="post_id" type="hidden" name="post_id" value="<?php echo $posts->id; ?>">
+              <input id="user_id" type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
+            </form>
+          </div>
     </div>
+    
 
 
     
@@ -87,101 +93,3 @@ if(!isset($_SESSION['username'])) {
         <?php endforeach; ?>
 
   <?php require "includes/footer.php"; ?>
-
- <script>
-  $(document).ready(function() {
-
-       $(document).on('submit', function(e) {
-        e.preventDefault();
-          //alert('Form submitted');
-          var formdata = $("#comment_data").serialize()+'&submit=submit';
-
-          $.ajax({
-            type: 'post',
-            url: 'insert-comments.php',
-            data: formdata,
-
-            success:function() {
-              //alert('success');
-              $("#comment").val(null);
-              $("#username").val(null);
-              $("#post_id").val(null);
-
-              $("#msg").html("Your Comment Added successfully").toggleClass("alert alert-success bg-success text-white mt-3");
-              fetch();
-            }
-          });
-       });
-
-// for Delete comment
-
-  $("#delete-btn").on('click', function(e) {
-        e.preventDefault();
-          //alert('Form submitted');
-          var id = $(this).val();
-
-          $.ajax({
-            type: 'post',
-            url: 'delete-comment.php',
-            data: {
-              delete: 'delete',
-              id: id
-            },
-
-            success:function() {
-             // alert(id);
-
-             $("#delete-msg").html("Your Comment deleted successfully").toggleClass("alert alert-danger bg-danger text-white mt-3");
-             fetch();
-            }
-          });
-       });
-
-
-
-
-
-
-       function fetch(){
-        setInterval(function () {
-          $("body").load("show.php?id=<?php echo $_GET['id']; ?>")
-        }, 5000);
-       }
-// rating codes
-       $(".my-rating").starRating({
-    starSize: 25,
-
-    initialRating: "<?php 
-
-    if(isset($rating->rating) AND isset($rating->user_id) AND $rating->user_id == $_SESSION['user_id']) {
-      echo $rating->rating;
-    } else {
-      echo '0';
-    }
-    ?>",
-
-    callback: function(currentRating, $el){
-        $("#rating").val(currentRating);
-
-        $(".my-rating").click(function(e) {
-          e.preventDefault();
-
-          var formdata = $("#form-data").serialize()+'&insert=insert';
-
-          $.ajax({
-            type: "POST",
-            url: 'insert-ratings.php',
-            data: formdata,
-
-            success:function() {
-              //alert(formdata);
-            }
-          })
-
-        })
-
-    }
-});
-
-  });
- </script>

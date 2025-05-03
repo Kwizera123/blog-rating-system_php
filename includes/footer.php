@@ -18,5 +18,123 @@
 
 
 
+  <script>
+  $(document).ready(function() {
+
+       $(document).on('submit', function(e) {
+        e.preventDefault();
+          //alert('Form submitted');
+          var formdata = $("#comment_data").serialize()+'&submit=submit';
+
+          $.ajax({
+            type: 'post',
+            url: 'insert-comments.php',
+            data: formdata,
+
+            success:function() {
+              //alert('success');
+              $("#comment").val(null);
+              $("#username").val(null);
+              $("#post_id").val(null);
+
+              $("#msg").html("Your Comment Added successfully").toggleClass("alert alert-success bg-success text-white mt-3");
+              fetch();
+            }
+          });
+       });
+
+// for Delete comment
+
+  $("#delete-btn").on('click', function(e) {
+        e.preventDefault();
+          //alert('Form submitted');
+          var id = $(this).val();
+
+          $.ajax({
+            type: 'post',
+            url: 'delete-comment.php',
+            data: {
+              delete: 'delete',
+              id: id
+            },
+
+            success:function() {
+             // alert(id);
+
+             $("#delete-msg").html("Your Comment deleted successfully").toggleClass("alert alert-danger bg-danger text-white mt-3");
+             fetch();
+            }
+          });
+       });
+
+
+       function fetch(){
+        setInterval(function () {
+          $("body").load("show.php?id=<?php echo $_GET['id']; ?>")
+        }, 5000);
+       }
+// rating codes
+       $(".my-rating").starRating({
+    starSize: 25,
+
+    initialRating: "<?php 
+
+    if(isset($rating->rating) AND isset($rating->user_id) AND $rating->user_id == $_SESSION['user_id']) {
+      echo $rating->rating;
+    } else {
+      echo '0';
+    }
+    ?>",
+
+    callback: function(currentRating, $el){
+        $("#rating").val(currentRating);
+
+        $(".my-rating").click(function(e) {
+          e.preventDefault();
+
+          var formdata = $("#form-data").serialize()+'&insert=insert';
+
+          $.ajax({
+            type: "POST",
+            url: 'insert-ratings.php',
+            data: formdata,
+
+            success:function() {
+              //alert(formdata);
+            }
+          })
+
+        })
+
+    }
+});
+
+ // Live search
+ $("#search_data").keyup(function() {
+   var search = $(this).val();
+   //alert(search);
+
+   if(search !== '') {
+
+    $.ajax({
+      type: "POST",
+      url: "search.php",
+      data: {
+        search: search
+      },
+        success: function(data) {
+            $("#search-data").html(data);
+        }
+    })
+   } else {
+    $("#search-data").css('display', 'none');
+   }
+ })
+
+  });
+ </script>
+
+
+
 </body>
 </html>

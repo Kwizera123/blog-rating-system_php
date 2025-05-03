@@ -6,7 +6,7 @@
 
 
     //dbname
-    $dbname = "auth-sys";
+    $dbname = "rating-system";
 
     //user
     $user = "root";
